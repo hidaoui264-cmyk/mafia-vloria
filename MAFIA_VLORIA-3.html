@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10051f">
+<title>MAFIA VLORIA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#40135e,transparent 55%),linear-gradient(145deg,#090510,#170a25);color:#fff;font-family:Cairo,Arial,sans-serif}.wrap{max-width:680px;margin:auto;padding:24px 15px}.brand{text-align:center;margin:12px 0 25px}.logo{width:90px;height:90px;border-radius:23px;object-fit:cover;box-shadow:0 0 35px #d64bff66}.brand h1{margin:10px 0 0;font-size:35px;font-weight:900;letter-spacing:1px}.brand h1 span{color:#dc82ff}.brand p{color:#bca9ca;margin:2px}.card{background:#180e26;border:1px solid #482d5e;border-radius:22px;padding:24px;box-shadow:0 18px 55px #0008}.hidden{display:none!important}h2{margin:0 0 6px}p.muted,.muted{color:#b9a9c9}label{display:block;margin:17px 0 6px}input{width:100%;padding:13px;border-radius:11px;background:#0d0715;border:1px solid #533768;color:white;font:inherit;outline:none}button{border:0;border-radius:11px;padding:12px 17px;color:white;font:700 15px Cairo;cursor:pointer}.primary{background:linear-gradient(110deg,#8b45ff,#e14cff);width:100%;margin-top:15px}.secondary{background:#30203f;border:1px solid #694582}.row{display:flex;gap:9px;margin-top:10px}.row>*{flex:1}.line{height:1px;background:#3c294d;margin:22px 0}.hint{font-size:12px;color:#9c8baa;text-align:center}.roomtop{display:flex;align-items:center;justify-content:space-between}.code{font-size:27px;color:#ed9aff;letter-spacing:4px}.players{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:15px 0}.player{padding:10px;background:#0e0817;border:1px solid #3d2850;border-radius:10px}.tag{color:#e5a1ff;font-size:12px}.badge{background:#3b2051;color:#f0b0ff;border-radius:20px;padding:5px 12px;font-size:12px}.targets{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:15px 0}.targets button{background:#2a193a;border:1px solid #68417f}.log{background:#0d0715;border-radius:10px;padding:12px;min-height:50px;margin:12px 0;color:#e8c9f4}.chatlog{height:110px;overflow:auto;background:#0d0715;padding:10px;border-radius:10px;font-size:13px}.chatrow{display:flex;gap:8px;margin-top:8px}.chatrow input{min-width:0}.notice{color:#ffcf83;font-size:12px;margin-top:12px}footer{text-align:center;color:#806c90;font-size:11px;margin:20px}
+</style>
+</head>
+<body><main class="wrap">
+<header class="brand">
+<img class="logo" src="https://dummyimage.com/180x180/25103a/f0a0ff.png&text=MV" alt="شعار Mafia Vloria">
+<h1>MAFIA <span>VLORIA</span></h1><p>اكشف الخائن... أو أخفِ هويتك</p>
+</header>
+<section class="card" id="home">
+<h2>مرحباً بك في عالم المافيا</h2><p class="muted">نسخة تجريبية محلية — أدخل اسمك للبدء.</p>
+<label>اسم اللاعب</label><input id="name" maxlength="18" placeholder="اكتب اسمك">
+<button class="primary" id="create">إنشاء غرفة تجريبية</button>
+<div class="line"></div><label>رمز الغرفة</label><input id="codeInput" maxlength="6" placeholder="أدخل الرمز">
+<button class="secondary" style="width:100%;margin-top:10px" id="join">انضمام</button>
+<p class="notice">تنبيه: ملف HTML وحده لا ينشئ غرفاً مشتركة عبر الإنترنت. هذه نسخة واجهة وتجربة محلية فقط.</p>
+</section>
+<section class="card hidden" id="lobby">
+<div class="roomtop"><div><span class="tag">رمز الغرفة التجريبية</span><div class="code" id="code"></div></div><button class="secondary" id="copy">نسخ</button></div>
+<h2 style="margin-top:20px">اللاعبون <span class="tag" id="count"></span></h2><div class="players" id="players"></div>
+<label>إضافة لاعب تجريبي على هذا الجهاز</label><div class="row"><input id="extra" placeholder="اسم اللاعب"><button class="secondary" id="add">إضافة</button></div>
+<button class="primary" id="start">ابدأ اللعبة</button><p class="hint">تحتاج 4 لاعبين على الأقل للتجربة.</p>
+</section>
+<section class="card hidden" id="game">
+<div class="roomtop"><span class="badge" id="phase">الليل</span><span class="tag" id="role"></span></div>
+<h2 id="title" style="margin-top:15px">حان وقت اللعب</h2><p class="muted" id="description">اختر لاعباً حسب دورك.</p>
+<div class="targets" id="targets"></div><div class="log" id="log">بدأت اللعبة.</div>
+<button class="secondary" id="next" style="width:100%">الانتقال إلى النهار / الجولة التالية</button>
+</section>
+<footer>MAFIA VLORIA ✦ نسخة تجريبية HTML</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);let players=[],code='',round=1,phase='lobby',current=0;
+function show(id){['home','lobby','game'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
+function makeCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
+function render(){ $('players').innerHTML=players.map((p,i)=>`<div class="player">${i+1}. ${p.name}</div>`).join('');$('count').textContent=`(${players.length}/15)`}
+$('create').onclick=()=>{let n=$('name').value.trim();if(!n)return alert('اكتب اسمك أولاً');players=[{name:n}];code=makeCode();$('code').textContent=code;render();show('lobby')};
+$('join').onclick=()=>{if(!$('name').value.trim())return alert('اكتب اسمك أولاً');if(!$('codeInput').value.trim())return alert('أدخل رمز الغرفة');alert('هذه نسخة HTML محلية. للانضمام من أجهزة أخرى نحتاج خادماً أونلاين.');};
+$('copy').onclick=()=>navigator.clipboard?.writeText(code);
+$('add').onclick=()=>{let n=$('extra').value.trim();if(!n)return;if(players.length>=15)return alert('الغرفة ممتلئة');players.push({name:n});$('extra').value='';render()};
+$('start').onclick=()=>{if(players.length<4)return alert('أضف 4 لاعبين على الأقل');let shuffled=[...players].sort(()=>Math.random()-.5);let roles=['مافيا','طبيب','محقق',...Array(players.length-3).fill('مواطن')];players.forEach(p=>p.role=roles[shuffled.indexOf(p)]);players.forEach(p=>p.alive=true);phase='night';round=1;current=0;show('game');renderGame()};
+function renderGame(){$('phase').textContent=phase==='night'?'🌙 الليل':'☀️ النهار';$('role').textContent='دور اللاعب: '+players[current].role;$('title').textContent=phase==='night'?'اختيار الليل':'وقت التصويت';$('description').textContent=players[current].name+'، مرّر الجهاز للاعب ليختار سراً.';$('targets').innerHTML=players.map((p,i)=>p.alive&&i!==current?`<button data-i="${i}">${p.name}</button>`:'').join('');document.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{let target=players[+b.dataset.i];$('log').textContent='تم اختيار '+target.name+' (تجربة محلية).';current=(current+1)%players.length;$('role').textContent='التالي: '+players[current].name;});}
+$('next').onclick=()=>{phase=phase==='night'?'day':'night';if(phase==='night')round++;$('log').textContent='الجولة '+round+' — '+(phase==='night'?'بدأ الليل.':'بدأ النهار.');current=0;renderGame()};
+</script></body></html>
